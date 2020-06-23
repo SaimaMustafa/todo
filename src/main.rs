@@ -20,25 +20,33 @@ fn introduction() {
 fn main() {
     introduction();
     
-    // action choose 
-    let mut action_str = String::new();
+    
     
     //main loop
     loop {
+
         // display possible actions
+        println!("[1] - first action");
         println!("[0] - exit app");
         
         // prompt
         print!(">: ");
+        #[warn(unused_must_use)]
         io::stdout().flush();
         
-        // action selection
+        // action var
+        let mut action = String::new();
+
+        // action selection line read
         io::stdin()
-            .read_line(&mut action_str)
+            .read_line(&mut action)
             .expect("Action read failed");
 
         // parse action value
-        let action: u8  = action_str.parse::<u8>().unwrap();
+        let action = match action.trim().parse::<u8>() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
 
         //execute given action
         // if action equals zero -> exit app
@@ -46,9 +54,15 @@ fn main() {
             break
         }
 
-
+        match action {
+            1 => println!("This is gonna be first action"),
+            2 => println!("This is gonna be second action"),
+            _ => println!("No action found")
 
         }
 
+
+    }
+    println!("Goodbye.")
     
 }
