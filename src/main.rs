@@ -7,7 +7,7 @@ struct Task {
     task: String,
     timestamp_create: u32,
     timestamp_done: u32,
-    task_done: bool
+    task_status: bool
 }
 
 fn clear_screen() {
@@ -21,9 +21,6 @@ fn display_prompt(prompt: &str) {
     #[warn(unused_must_use)]
     io::stdout().flush();
 }
-
-
-
 
 fn introduction() {
     println!("Simple TODOs management app");
@@ -45,17 +42,14 @@ fn create_task(vecref: &mut Vec<Task>){
         task: task_str,
         timestamp_create: 2645762,
         timestamp_done: 0,
-        task_done: false
+        task_status: false
 
     };
 
     // push the object to vector list and clear screen
     vecref.push(new_task);
     clear_screen();    
-
-
 }
-
 
 fn delete_task(vecref: &mut Vec<Task>) {
     display_prompt("[Task ID] ");
@@ -65,46 +59,74 @@ fn delete_task(vecref: &mut Vec<Task>) {
         .read_line(&mut task_str)
         .expect("Failed to read task ID");
 
+    //parse task id (String type) into usize
     let task_id = task_str.trim().parse::<usize>().unwrap();
+    
+    // verify the vector length to prevent thread panic
+    if task_id <= (vecref.len()-1) {
+        vecref.remove(task_id);
+        clear_screen();
+    }
+    else {
+        clear_screen();
+    }
+}
 
-    vecref.remove(task_id);
-    clear_screen();
+fn switch_task_status(vecref: &mut Vec<Task>) {
+    display_prompt("[Task ID] ");
+    
+    let mut task_str = String::new();
+    io::stdin()
+        .read_line(&mut task_str)
+        .expect("Failed to read task ID");
+
+    let task_id = task_str.trim().parse::<usize>().unwrap();
+    
+    // get current task status
+    if task_id <= (vecref.len()-1) {
+        // verify if the given index does not exceeds the vector length to avoid thread panic
+        let current_status: bool = vecref[task_id].task_status; 
+    
+        vecref[task_id].task_status = !current_status;
+        clear_screen();
+    } 
+    else {
+        clear_screen();
+    }
+    
 }
 
 
 fn main() {
-    clear_screen();
-    introduction();
-    
     let mut tasks: Vec<Task> = Vec::new();
 
     //main loop
     loop {
-
+        clear_screen();
+        introduction();
         //TODO load tasks from file
-        
-        
     
         //display current tasks
         if tasks.len() == 0 {
             println!("INFO: No tasks defined");
         } else {
+            println!("Current tasks: ");
             let mut cnt = 0;
             let task_list = &mut tasks;
             for task in task_list {
                 println!("----------------------------------");
                 println!("ID: {}", cnt);
                 println!("{}", task.task);
-                println!("Status: {}", match task.task_done {
+                println!("Status: {}", match task.task_status {
                     false => "Not done",
                     true => "Done"
                 });
                 println!("Created: {} | Done: {}", task.timestamp_create, task.timestamp_done);
                 cnt += 1;
             }
-            println!("----------------------------------");
+            
         }
-
+        println!("----------------------------------");
         println!("");
         // display possible actions
         println!("[1] - add task");
@@ -139,7 +161,7 @@ fn main() {
         let task_list = &mut tasks;
         match action {
             1 => create_task(task_list),
-            2 => println!("This is gonna be second action"),
+            2 => switch_task_status(task_list),
             4 => delete_task(task_list),
             _ => println!("No action found")
 
