@@ -58,9 +58,17 @@ fn create_task(vecref: &mut Vec<Task>){
 
 
 fn delete_task(vecref: &mut Vec<Task>) {
-    display_prompt("[Task ID] ")
+    display_prompt("[Task ID] ");
     
+    let mut task_str = String::new();
+    io::stdin()
+        .read_line(&mut task_str)
+        .expect("Failed to read task ID");
 
+    let task_id = task_str.trim().parse::<usize>().unwrap();
+
+    vecref.remove(task_id);
+    clear_screen();
 }
 
 
@@ -100,13 +108,14 @@ fn main() {
         println!("");
         // display possible actions
         println!("[1] - add task");
-        println!("[2] - mark task as done");
-        println!("[3] - mark task as not done");
+        println!("[2] - switch task status");
+        println!("");
         println!("[4] - delete task");
         println!("[0] - exit app");
         
+        
         // prompt
-        display_prompt(">: ");
+        display_prompt("[action] ");
         
         // action var
         let mut action = String::new();
@@ -131,6 +140,7 @@ fn main() {
         match action {
             1 => create_task(task_list),
             2 => println!("This is gonna be second action"),
+            4 => delete_task(task_list),
             _ => println!("No action found")
 
         };
