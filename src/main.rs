@@ -4,13 +4,17 @@ use std::io::Write;
 // handling tasks structure
 #[derive(Clone)]
 struct Task {
-    task: String,
-    timestamp_create: u32,
-    timestamp_done: u32,
-    task_status: bool
+    task: String,           //Task string
+    timestamp_create: u32,  //Creation timestamp    
+    timestamp_done: u32,    //Done timestamp
+    task_status: bool       // Status (True => Done, False => Not done)
 }
 
+
+
+
 fn clear_screen() {
+    // Moving console cursor to first 1st row 1st col
     print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
 }
 
@@ -18,7 +22,6 @@ fn clear_screen() {
 fn display_prompt(prompt: &str) {
     // prompt
     print!("{}", prompt.to_string());
-    #[warn(unused_must_use)]
     io::stdout().flush();
 }
 
@@ -96,9 +99,22 @@ fn switch_task_status(vecref: &mut Vec<Task>) {
     
 }
 
+// fn loadTasks(vecref: &mut Vec<Task>) {
+//     // load up text file containing the tasks
+//     let tasks_file = fs::File::open("tasks");
+
+//         // if the files does not exist - create it
+//     // iterate over the file to load up the tasks
+//     let data = fs::read_to_string(tasks_file).expect("Problem appeared during file reading");
+// }
+
 
 fn main() {
+    //TODO load tasks from text file
     let mut tasks: Vec<Task> = Vec::new();
+
+    // loadTasks(&mut tasks);
+
 
     //main loop
     loop {
@@ -110,9 +126,10 @@ fn main() {
         if tasks.len() == 0 {
             println!("INFO: No tasks defined");
         } else {
-            println!("Current tasks: ");
             let mut cnt = 0;
             let task_list = &mut tasks;
+            
+            println!("Current tasks: ");
             for task in task_list {
                 println!("----------------------------------");
                 println!("ID: {}", cnt);
@@ -126,15 +143,16 @@ fn main() {
             }
             
         }
+
         println!("----------------------------------");
         println!("");
+        
         // display possible actions
         println!("[1] - add task");
         println!("[2] - switch task status");
         println!("");
         println!("[4] - delete task");
         println!("[0] - exit app");
-        
         
         // prompt
         display_prompt("[action] ");
@@ -159,6 +177,7 @@ fn main() {
             break
         }
         let task_list = &mut tasks;
+        
         match action {
             1 => create_task(task_list),
             2 => switch_task_status(task_list),
